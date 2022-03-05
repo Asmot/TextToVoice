@@ -25,6 +25,8 @@ def writeFile(file_path,con):
     file1.write(con)
     file1.close()  
 
+def fileExist(file_path):
+    return os.path.isfile(file_path)
 
 
 #生成目录
