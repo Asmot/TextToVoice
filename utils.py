@@ -8,10 +8,9 @@ import shutil
 
 
 def ensure_dir(file_path):
-
-    directory = os.path.dirname(file_path)
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+    if not os.path.exists(file_path):
+        print ( "mkdir => " + file_path)
+        os.makedirs(file_path)
 
 def readFile(filePath):
     f = open(filePath)
@@ -53,6 +52,13 @@ def findFiles(dir,filterEx):
             for filename in filenames:
                 if filterEx in filename:
                     matches.append(os.path.join(root,filename))
+    return matches
+
+def listFiles(dir):
+    matches = []
+    for root,dirnames,filenames in os.walk(dir):
+        for filename in filenames:
+            matches.append(os.path.join(root,filename))
     return matches
 
 def changeToAbsPath(path):
