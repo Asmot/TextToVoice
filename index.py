@@ -38,8 +38,9 @@ def tts_to_file(filePath, outputPath, outputTdPath):
 	segments = textToSegmentByLines(fileCon)
 	totalLen = len(segments)
 	for seg in segments:
-		audioDuration = tts_nsss(seg.words, outputPath, AUDIO_FORMAT);
-		print ("text: %sduration %s"%(seg.words, audioDuration))
+		tdItem = tts_nsss(seg.words, outputPath, AUDIO_FORMAT);
+		
+		print ("text: %s  sd: %s, %s"%(seg.words, tdItem.start, tdItem.duration))
 
 		# 保存文本和文本播放时长，用来制作字幕
 		writeFileAppend(outputPathTextDuration, seg.words)
@@ -47,7 +48,8 @@ def tts_to_file(filePath, outputPath, outputTdPath):
 			# 保证换行
 			writeFileAppend(outputPathTextDuration, "\n")
 			
-		writeFileAppend(outputPathTextDuration, str(audioDuration) + "\n")
+		writeFileAppend(outputPathTextDuration, str(tdItem.start) + "\n")
+		writeFileAppend(outputPathTextDuration, str(tdItem.duration) + "\n")
 
 		print ("tts complete %s/%s"%(index, totalLen))
 		index = index + 1
@@ -61,10 +63,11 @@ def audioAndTextDuration_to_movie(title, audioFilePath, tdFilePath, outputPath):
 	
 	# 读取字幕文件
 	for i in range(totalLines - 1):
-		if i % 2 == 0:
-			item = TextItem()
+		if i % 3 == 0:
+			item = TextAudioItem()
 			item.text = textLines[i]
-			item.audioDuration = textLines[i + 1]
+			item.audioStart = textLines[i + 1]
+			item.audioDuration = textLines[i + 2]
 			textAudioLines.append(item)
 
 	# 生成视频文件

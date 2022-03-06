@@ -5,6 +5,10 @@ APP_ID = '25709228'
 API_KEY = 'oOUMpGrZzj71M6F4MlZavOD2'
 SECRET_KEY = 'xprrvxGX5VmthpIbZMtRfQAjxUxQ0EBC'
 
+class TextDurationItem :
+	start = 0
+	duration = 0
+
 def textToWav(content, outputPath):
 	import subprocess
 	import shlex
@@ -46,6 +50,8 @@ def combineAudio(destPath, fromPath, format_v):
 
 ## 单位 s
 def getAudioTime(filePath):
+	if not fileExist(filePath):
+		return 0;
 	from pydub import AudioSegment
 	myaudio1 = AudioSegment.from_file(filePath)
 	return len(myaudio1)  / 1000
@@ -68,11 +74,16 @@ def tts_nsss(content, outputPath, format = "wav"):
 	# ve.continueSpeakingString_toURL_(text,url)
 
 	# 获取时长
-	audioDuration = getAudioTime(tempPath)
+	beforeDuration = getAudioTime(outputPath)
 
 	combineAudio(outputPath, tempPath, format)
+	finalDuration = getAudioTime(outputPath)
 
-	return audioDuration
+	# 避免拼接出现异常
+	item = TextDurationItem()
+	item.start = beforeDuration;
+	item.duration = (finalDuration - beforeDuration)
+	return item
 
 
 

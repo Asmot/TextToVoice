@@ -1,4 +1,4 @@
 *.pyc
 data
 output
-.temp.wav
+temp.wav

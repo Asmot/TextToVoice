@@ -29,9 +29,11 @@ def generateVideoByText(file_path, text):
 
 # def get
 
-class TextItem:
+# 文本和字幕的播放时长和播放开始位置
+class TextAudioItem:
 	text = ""
 	audioDuration = 0
+	audioStart = 0
 
 def generateVideoByTextAndAudio(file_path, title, textAudioLines, audio_path):
 	screensize = (720,460)
@@ -54,8 +56,8 @@ def generateVideoByTextAndAudio(file_path, title, textAudioLines, audio_path):
 	totalTextDuration = 0
 	for item in textAudioLines:		
 		curDuration = float(item.audioDuration)
-		curStart = totalTextDuration;
-		print ("start %s duration %s text: %s" %(str(curStart), str(item.audioDuration), item.text))
+		curStart = item.audioStart;
+		print ("start %s/%s duration %s text: %s" %(str(curStart), str(duration), str(item.audioDuration), item.text))
 		# 记录总时长，作为下一个字幕的起点
 		totalTextDuration = totalTextDuration + curDuration;
 
@@ -74,23 +76,23 @@ def generateVideoByTextAndAudio(file_path, title, textAudioLines, audio_path):
 	videoFile.write_videofile(file_path, fps=15)
 
 
-if __name__ == "__main__":	
-	title = "第1章 养的鸡竟是凤凰"
-	text_file_path = changeToAbsPath("./output/我什么时候无敌了/第1章 养的鸡竟是凤凰.wav.td")
-	file_path = changeToAbsPath("./output/001.mp4")
-	audio_path = changeToAbsPath("./output/我什么时候无敌了/第1章 养的鸡竟是凤凰.wav")
-	textLines = readFileTolines(text_file_path)
+# if __name__ == "__main__":	
+# 	title = "第1章 养的鸡竟是凤凰"
+# 	text_file_path = changeToAbsPath("./output/我什么时候无敌了/第1章 养的鸡竟是凤凰.wav.td")
+# 	file_path = changeToAbsPath("./output/001.mp4")
+# 	audio_path = changeToAbsPath("./output/我什么时候无敌了/第1章 养的鸡竟是凤凰.wav")
+# 	textLines = readFileTolines(text_file_path)
 	
-	textAudioLines = []
-	totalLines = len(textLines)
-	print (totalLines)
-	for i in range(totalLines - 1):
-		if i % 2 == 0:
-			item = TextItem()
-			item.text = textLines[i]
-			item.audioDuration = textLines[i + 1]
-			textAudioLines.append(item)
+# 	textAudioLines = []
+# 	totalLines = len(textLines)
+# 	print (totalLines)
+# 	for i in range(totalLines - 1):
+# 		if i % 2 == 0:
+# 			item = TextItem()
+# 			item.text = textLines[i]
+# 			item.audioDuration = textLines[i + 1]
+# 			textAudioLines.append(item)
 
-	generateVideoByTextAndAudio(file_path, title, textAudioLines, audio_path)
-	# generateVideoByText(file_path, text)
+# 	generateVideoByTextAndAudio(file_path, title, textAudioLines, audio_path)
+# 	# generateVideoByText(file_path, text)
 
