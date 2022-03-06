@@ -42,7 +42,7 @@ def generateVideoByTextAndAudio(file_path, title, textAudioLines, audio_path):
 	# videoFile = VideoFileClip(file_path);
 	audio_clip = AudioFileClip(audio_path)
 	duration = audio_clip.duration;
-	print (audio_clip.duration)
+	print ("total duration %s"%(str(audio_clip.duration)))
 
 	text_clips = []
 	title_clip = TextClip(title,fontsize=70, color='red',font="./font/trends.ttf")

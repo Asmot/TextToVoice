@@ -38,21 +38,24 @@ def tts_to_file(filePath, outputPath, outputTdPath):
 	segments = textToSegmentByLines(fileCon)
 	totalLen = len(segments)
 	for seg in segments:
-		tdItem = tts_nsss(seg.words, outputPath, AUDIO_FORMAT);
-		
-		print ("text: %s  sd: %s, %s"%(seg.words, tdItem.start, tdItem.duration))
+		print("line: " + seg.words)
+		# 如果words有标点符号会被拆分为多个
+		tdItems = tts_nsss(seg.words, outputPath, AUDIO_FORMAT);
+		for tdItem in tdItems:
+			print ("sd: %s, %s text %s"%(tdItem.start, tdItem.duration, tdItem.text))
 
-		# 保存文本和文本播放时长，用来制作字幕
-		writeFileAppend(outputPathTextDuration, seg.words)
-		if not seg.words.endswith("\n"):
-			# 保证换行
-			writeFileAppend(outputPathTextDuration, "\n")
-			
-		writeFileAppend(outputPathTextDuration, str(tdItem.start) + "\n")
-		writeFileAppend(outputPathTextDuration, str(tdItem.duration) + "\n")
+			# 保存文本和文本播放时长，用来制作字幕
+			writeFileAppend(outputPathTextDuration, tdItem.text)
+			if not tdItem.text.endswith("\n"):
+				# 保证换行
+				writeFileAppend(outputPathTextDuration, "\n")
+				
+			writeFileAppend(outputPathTextDuration, str(tdItem.start) + "\n")
+			writeFileAppend(outputPathTextDuration, str(tdItem.duration) + "\n")
 
-		print ("tts complete %s/%s"%(index, totalLen))
 		index = index + 1
+		print ("tts complete %s/%s"%(index, totalLen))
+	
 		
 def audioAndTextDuration_to_movie(title, audioFilePath, tdFilePath, outputPath):
 
@@ -73,10 +76,10 @@ def audioAndTextDuration_to_movie(title, audioFilePath, tdFilePath, outputPath):
 	# 生成视频文件
 	generateVideoByTextAndAudio(outputPath, title, textAudioLines, audioFilePath)
 
-
-if __name__ == "__main__":
-	fileRootPath = changeToAbsPath("./data/我什么时候无敌了")
-	outputRootPath = changeToAbsPath("./output/我什么时候无敌了")
+def genMovieAndAudioByText(dirName, limitCount = 1, replace = False):
+	name = dirName
+	fileRootPath = changeToAbsPath("./data/" + name)
+	outputRootPath = changeToAbsPath("./output/" + name)
 	ensure_dir(outputRootPath)
 
 	filePathes = getAllFiles(fileRootPath)
@@ -87,9 +90,8 @@ if __name__ == "__main__":
 		fileName = os.path.basename(filePath)
 
 		fileIndex = fileIndex + 1
-		if fileIndex > 1:
+		if limitCount != -1 and fileIndex > limitCount:
 			break
-		print ("complete %s/%s %s"%(fileIndex, totalLen, fileName))
 
 		# 生成音频存放路径
 		audioFilePath = os.path.join(outputRootPath, fileName)
@@ -102,6 +104,11 @@ if __name__ == "__main__":
 		movieFilePath = os.path.join(outputRootPath, fileName)
 		movieFilePath = movieFilePath + "." + MOVIE_FORMAT
 
+		if replace:
+			deleteFile(audioFilePath)
+			deleteFile(tdFilePath)
+			deleteFile(movieFilePath)
+
 		# 如果存在了不需要处理
 		if fileExist(audioFilePath) : 
 			print ("local exist audio and td file pass")
@@ -113,6 +120,12 @@ if __name__ == "__main__":
 			print ("local exist movie file pass")
 		else:
 			audioAndTextDuration_to_movie(fileName, audioFilePath, tdFilePath, movieFilePath)
+
+		print ("complete %s/%s %s"%(fileIndex, totalLen, fileName))
+
+if __name__ == "__main__":
+	# genMovieAndAudioByText("我什么时候无敌了", 1)
+	genMovieAndAudioByText("测试数据", -1, True)
 		
 
 

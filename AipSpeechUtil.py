@@ -8,6 +8,7 @@ SECRET_KEY = 'xprrvxGX5VmthpIbZMtRfQAjxUxQ0EBC'
 class TextDurationItem :
 	start = 0
 	duration = 0
+	text = ""
 
 def textToWav(content, outputPath):
 	import subprocess
@@ -40,7 +41,7 @@ def combineAudio(destPath, fromPath, format_v):
 	if not fileExist(destPath):
 		myaudio1 = AudioSegment.from_file(fromPath)
 		output_audio =  myaudio1
-		output_audio.export(destPath)
+		output_audio.export(destPath, format = format_v, bitrate='192k')
 	else:
 		myaudio0 = AudioSegment.from_file(destPath)
 		myaudio1 = AudioSegment.from_file(fromPath)
@@ -52,11 +53,14 @@ def combineAudio(destPath, fromPath, format_v):
 def getAudioTime(filePath):
 	if not fileExist(filePath):
 		return 0;
+
 	from pydub import AudioSegment
 	myaudio1 = AudioSegment.from_file(filePath)
 	return len(myaudio1)  / 1000
 
-# 返回这段文本的播放时长 单位 s
+	
+# 返回这段文本的播放时长 单位 s, 返回数组
+# 如果content有标点符号会被拆分为多个，按照中文标点符号拆分
 def tts_nsss(content, outputPath, format = "wav"):
 	from  AppKit import NSSpeechSynthesizer
 	import sys
@@ -65,25 +69,37 @@ def tts_nsss(content, outputPath, format = "wav"):
 	tempPath = "./temp." + format
 	text = content
 
-	nssp = NSSpeechSynthesizer
-	ve = nssp.alloc().init()
-	ve.setRate_(200)
-	ve.setVoice_('com.apple.speech.synthesis.voice.Mei-Jia')
-	url = Foundation.NSURL.fileURLWithPath_(tempPath)
-	ve.startSpeakingString_toURL_(text,url)
-	# ve.continueSpeakingString_toURL_(text,url)
+	resultItems = []
+	
+	textList = splitWords(text)
+	
+	for textItem in textList:
+		# print ("text: %s textLen %s"%(textItem, len(textItem)))
+		if len(textItem) == 0:
+			continue
 
-	# 获取时长
-	beforeDuration = getAudioTime(outputPath)
+		# 获取时长
+		beforeDuration = getAudioTime(outputPath)
+		# print ("before duration " + str(beforeDuration))
 
-	combineAudio(outputPath, tempPath, format)
-	finalDuration = getAudioTime(outputPath)
+		nssp = NSSpeechSynthesizer
+		ve = nssp.alloc().init()
+		ve.setRate_(200)
+		ve.setVoice_('com.apple.speech.synthesis.voice.Mei-Jia')
+		url = Foundation.NSURL.fileURLWithPath_(tempPath)
+		ve.startSpeakingString_toURL_(textItem, url)
+		# ve.continueSpeakingString_toURL_(text,url)
+		combineAudio(outputPath, tempPath, format)
 
-	# 避免拼接出现异常
-	item = TextDurationItem()
-	item.start = beforeDuration;
-	item.duration = (finalDuration - beforeDuration)
-	return item
+		finalDuration = getAudioTime(outputPath)
+	
+		# 避免拼接出现异常 使用前后评接时长的查值
+		item = TextDurationItem()
+		item.text = textItem;
+		item.start = beforeDuration;
+		item.duration = (finalDuration - beforeDuration)
+		resultItems.append(item)
+	return resultItems
 
 
 

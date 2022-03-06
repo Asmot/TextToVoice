@@ -33,7 +33,7 @@ def textToSegment(text):
 # end with 。/ ？ / !
 def textToSegmentByLines(text):
 	segments = [] 
-	res = re.split("(?<=[\n])\s+", text)
+	res = re.split("[\n]", text)
 	for element in res:
 
 		seg = Segment();

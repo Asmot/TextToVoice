@@ -41,8 +41,13 @@ def writeFileAppend(file_path,con):
 
 
 def fileExist(file_path):
-    return os.path.isfile(file_path)
+    if os.path.exists(file_path):
+        return os.path.isfile(file_path)
+    return False
 
+def deleteFile(file_path):
+    if os.path.exists(file_path):
+        os.remove(file_path)
 
 #生成目录
 def mkdir(path):
@@ -76,6 +81,28 @@ def listFiles(dir):
         for filename in filenames:
             matches.append(os.path.join(root,filename))
     return matches
+
+
+def splitStr(text, maxLen):
+    textLen = len(text)
+    textList = []
+    maxLen = 20
+    if textLen > maxLen:
+        while True:
+            cutA = text[: maxLen]
+            cutB = text[maxLen: ]
+            textList.append(cutA)
+            if len(cutB) > maxLen:
+                text = cutB
+            else:
+                textList.append(cutB)
+                break
+    else:
+        textList.append(text)
+    return textList
+
+def splitWords(words):
+    return re.split("[?\”\，\。]", words)
 
 def changeToAbsPath(path):
     if os.path.isabs(path):
