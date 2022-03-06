@@ -5,7 +5,6 @@
 # Import everything needed to edit video clips
 from moviepy.editor import *
 from utils import *
-from TextSegment import *
 
 
 def generateVideoByText(file_path, text):
@@ -28,8 +27,13 @@ def generateVideoByText(file_path, text):
 	# Write the result to a file (many options available !)
 	txt_clip.write_videofile(file_path, fps=15)
 
+# def get
 
-def generateVideoByTextAndAudio(file_path, title, textLines, audio_path):
+class TextItem:
+	text = ""
+	audioDuration = 0
+
+def generateVideoByTextAndAudio(file_path, title, textAudioLines, audio_path):
 	screensize = (720,460)
 	titlePos = ("center",10)
 	textPos = ("center","center")
@@ -46,20 +50,22 @@ def generateVideoByTextAndAudio(file_path, title, textLines, audio_path):
 	text_clips.append(title_clip)
 
 	index = 0;
-	totalIndex = len(textLines)
-	for line in textLines:
-		curStart = duration * index / totalIndex
-		nextStart = duration * (index + 1) / totalIndex
-		curDuration = nextStart - curStart
-		line_clip = TextClip(line, fontsize=40, color='yellow',font="./font/trends.ttf")
+
+	totalTextDuration = 0
+	for item in textAudioLines:		
+		curDuration = float(item.audioDuration)
+		curStart = totalTextDuration;
+		print ("start %s duration %s text: %s" %(str(curStart), str(item.audioDuration), item.text))
+		# 记录总时长，作为下一个字幕的起点
+		totalTextDuration = totalTextDuration + curDuration;
+
+		line_clip = TextClip(item.text, fontsize=40, color='yellow',font="./font/trends.ttf")
 		line_clip = line_clip.set_pos(textPos)
 		line_clip = line_clip.set_start(curStart)
 		line_clip = line_clip.set_duration(curDuration)
 
 		index = index + 1
 		text_clips.append(line_clip)
-		if index > 2:
-			break
 
 	# 合并
 	videoFile = CompositeVideoClip(text_clips, size=screensize)
@@ -70,17 +76,21 @@ def generateVideoByTextAndAudio(file_path, title, textLines, audio_path):
 
 if __name__ == "__main__":	
 	title = "第1章 养的鸡竟是凤凰"
-	text_file_path = changeToAbsPath("./data/我什么时候无敌了/第1章 养的鸡竟是凤凰")
+	text_file_path = changeToAbsPath("./output/我什么时候无敌了/第1章 养的鸡竟是凤凰.wav.td")
 	file_path = changeToAbsPath("./output/001.mp4")
 	audio_path = changeToAbsPath("./output/我什么时候无敌了/第1章 养的鸡竟是凤凰.wav")
-	fileCon = readFile(text_file_path)
-	segments = textToSegmentByLines(fileCon)
+	textLines = readFileTolines(text_file_path)
+	
+	textAudioLines = []
+	totalLines = len(textLines)
+	print (totalLines)
+	for i in range(totalLines - 1):
+		if i % 2 == 0:
+			item = TextItem()
+			item.text = textLines[i]
+			item.audioDuration = textLines[i + 1]
+			textAudioLines.append(item)
 
-	textLines = []
-	for seg in segments:
-		textLines.append(seg.words)
-
-
-	generateVideoByTextAndAudio(file_path, title, textLines, audio_path)
+	generateVideoByTextAndAudio(file_path, title, textAudioLines, audio_path)
 	# generateVideoByText(file_path, text)
 

@@ -44,7 +44,13 @@ def combineAudio(destPath, fromPath, format_v):
 		output_audio = myaudio0 + myaudio1
 		output_audio.export(destPath, format = format_v, bitrate='192k')
 
+## 单位 s
+def getAudioTime(filePath):
+	from pydub import AudioSegment
+	myaudio1 = AudioSegment.from_file(filePath)
+	return len(myaudio1)  / 1000
 
+# 返回这段文本的播放时长 单位 s
 def tts_nsss(content, outputPath, format = "wav"):
 	from  AppKit import NSSpeechSynthesizer
 	import sys
@@ -61,6 +67,14 @@ def tts_nsss(content, outputPath, format = "wav"):
 	ve.startSpeakingString_toURL_(text,url)
 	# ve.continueSpeakingString_toURL_(text,url)
 
+	# 获取时长
+	audioDuration = getAudioTime(tempPath)
+
 	combineAudio(outputPath, tempPath, format)
+
+	return audioDuration
+
+
+
 
 # tts_nsss("","")

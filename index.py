@@ -24,6 +24,7 @@ def getAllFiles(dir):
 	return result
 
 def tts_to_file(filePath, outputPath):
+	outputPathTextDuration = outputPath + ".td"
 	print (filePath + " => " + outputPath)
 	fileCon = readFile(filePath)
 	## text to words segments
@@ -32,13 +33,17 @@ def tts_to_file(filePath, outputPath):
 	segments = textToSegmentByLines(fileCon)
 	totalLen = len(segments)
 	for seg in segments:
-		print (seg.words)
-		tts_nsss(seg.words, outputPath, AUDIO_FORMAT);
+		audioDuration = tts_nsss(seg.words, outputPath, AUDIO_FORMAT);
+		print ("text: %sduration %s"%(seg.words, audioDuration))
+
+		# 保存文本和文本播放时长，用来制作字幕
+		writeFileAppend(outputPathTextDuration, seg.words)
+		writeFileAppend(outputPathTextDuration, str(audioDuration) + "\n")
 
 		print ("tts complete %s/%s"%(index, totalLen))
 		index = index + 1
-		# if index > 10:
-		# 	break
+		if index > 10:
+			break
 
 if __name__ == "__main__":
 	fileRootPath = changeToAbsPath("./data/我什么时候无敌了")
@@ -65,24 +70,6 @@ if __name__ == "__main__":
 		tts_to_file(filePath, outputPath)
 		
 
-		
-
-	# filePath = changeToAbsPath(filePath)
-	# outputPath = changeToAbsPath(outputPath)
-
-	# fileCon = readFile(filePath)
-
-	# ## text to words segments
-	# segments = textToSegmentByLines(fileCon)
-
-	# index = 0;
-	# totalLen = len(segments)
-	# for seg in segments:
-	# 	tts_nsss(seg.words, outputPath);
-	# 	print ("complete %s/%s"%(index, totalLen))
-	# 	index = index + 1
-	# 	if index > 1:
-	# 		break
 
 
 

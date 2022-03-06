@@ -5,7 +5,7 @@
 import os
 import sys
 import shutil
-
+import re
 
 def ensure_dir(file_path):
     if not os.path.exists(file_path):
@@ -18,11 +18,27 @@ def readFile(filePath):
     f.close()
     return lines
 
+def readFileTolines(filePath):
+    f = open(filePath)
+    lines = f.read()
+    f.close()
+    res = []
+    temp = re.split("\n", lines)
+    for item in temp:
+        res.append(item)
+    return res;
+
+
 def writeFile(file_path,con):
-    ensure_dir(file_path)
     file1 = open(file_path, "w")  
     file1.write(con)
     file1.close()  
+
+def writeFileAppend(file_path,con):
+    file1 = open(file_path, "a")  
+    file1.write(con)
+    file1.close()  
+
 
 def fileExist(file_path):
     return os.path.isfile(file_path)
