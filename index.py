@@ -5,8 +5,11 @@ from utils import *
 
 from TextSegment import *
 from AipSpeechUtil import *
+from VideoUtils import *
 
 AUDIO_FORMAT = "wav"
+TD_FORMAT = "td"
+MOVIE_FORMAT = "mp4"
 
 def getAllFiles(dir):
 	fileNames = listFiles(dir)
@@ -23,8 +26,10 @@ def getAllFiles(dir):
 				break
 	return result
 
-def tts_to_file(filePath, outputPath):
-	outputPathTextDuration = outputPath + ".td"
+## 生成语音和字幕文件
+## 字幕文件以td结尾 内容是 文本和时长，换行分割
+def tts_to_file(filePath, outputPath, outputTdPath):
+	outputPathTextDuration = outputTdPath
 	print (filePath + " => " + outputPath)
 	fileCon = readFile(filePath)
 	## text to words segments
@@ -38,12 +43,33 @@ def tts_to_file(filePath, outputPath):
 
 		# 保存文本和文本播放时长，用来制作字幕
 		writeFileAppend(outputPathTextDuration, seg.words)
+		if not seg.words.endswith("\n"):
+			# 保证换行
+			writeFileAppend(outputPathTextDuration, "\n")
+			
 		writeFileAppend(outputPathTextDuration, str(audioDuration) + "\n")
 
 		print ("tts complete %s/%s"%(index, totalLen))
 		index = index + 1
-		if index > 10:
-			break
+		
+def audioAndTextDuration_to_movie(title, audioFilePath, tdFilePath, outputPath):
+
+	textLines = readFileTolines(tdFilePath)
+	
+	textAudioLines = []
+	totalLines = len(textLines)
+	
+	# 读取字幕文件
+	for i in range(totalLines - 1):
+		if i % 2 == 0:
+			item = TextItem()
+			item.text = textLines[i]
+			item.audioDuration = textLines[i + 1]
+			textAudioLines.append(item)
+
+	# 生成视频文件
+	generateVideoByTextAndAudio(outputPath, title, textAudioLines, audioFilePath)
+
 
 if __name__ == "__main__":
 	fileRootPath = changeToAbsPath("./data/我什么时候无敌了")
@@ -61,14 +87,31 @@ if __name__ == "__main__":
 		if fileIndex > 1:
 			break
 		print ("complete %s/%s %s"%(fileIndex, totalLen, fileName))
-		outputPath = os.path.join(outputRootPath, fileName)
-		outputPath = outputPath + "." + AUDIO_FORMAT
 
-		if fileExist(outputPath) : 
-			print ("local exist pass")
-			continue
-		tts_to_file(filePath, outputPath)
+		# 生成音频存放路径
+		audioFilePath = os.path.join(outputRootPath, fileName)
+		audioFilePath = audioFilePath + "." + AUDIO_FORMAT
+
+		# 生成字幕存放路径, 是音频文件添加.td
+		tdFilePath = audioFilePath + "." + TD_FORMAT
+
+		# 生成 视频路径
+		movieFilePath = os.path.join(outputRootPath, fileName)
+		movieFilePath = movieFilePath + "." + MOVIE_FORMAT
+
+		# 如果存在了不需要处理
+		if fileExist(audioFilePath) : 
+			print ("local exist audio and td file pass")
+		else:
+			tts_to_file(filePath, audioFilePath, tdFilePath)
 		
+		# 如果存在了不需要处理
+		if fileExist(movieFilePath) : 
+			print ("local exist movie file pass")
+		else:
+			audioAndTextDuration_to_movie(fileName, audioFilePath, tdFilePath, movieFilePath)
+		
+
 
 
 
