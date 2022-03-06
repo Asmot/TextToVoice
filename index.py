@@ -56,12 +56,12 @@ if __name__ == "__main__":
 		if fileIndex > 1:
 			break
 		print ("complete %s/%s %s"%(fileIndex, totalLen, fileName))
-		if fileExist(filePath) : 
-			print ("local exist pass")
-			continue
-
 		outputPath = os.path.join(outputRootPath, fileName)
 		outputPath = outputPath + "." + AUDIO_FORMAT
+
+		if fileExist(outputPath) : 
+			print ("local exist pass")
+			continue
 		tts_to_file(filePath, outputPath)
 		
 
