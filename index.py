@@ -76,11 +76,13 @@ def audioAndTextDuration_to_movie(title, audioFilePath, tdFilePath, outputPath):
 	# 生成视频文件
 	generateVideoByTextAndAudio(outputPath, title, textAudioLines, audioFilePath)
 
-def genMovieAndAudioByText(dirName, limitCount = 1, replace = False):
+def genMovieAndAudioByText(dirName, limitCount = 1, replace = False, inputRootDir = "data", outputRootDir = "output"):
 	name = dirName
-	fileRootPath = changeToAbsPath("./data/" + name)
-	outputRootPath = changeToAbsPath("./output/" + name)
+	fileRootPath = changeToAbsPath(os.path.join(inputRootDir, name))
+	outputRootPath = changeToAbsPath(os.path.join(outputRootDir, name))
 	ensure_dir(outputRootPath)
+	print (fileRootPath)
+	print (outputRootPath)
 
 	filePathes = getAllFiles(fileRootPath)
 
@@ -124,8 +126,8 @@ def genMovieAndAudioByText(dirName, limitCount = 1, replace = False):
 		print ("complete %s/%s %s"%(fileIndex, totalLen, fileName))
 
 if __name__ == "__main__":
-	# genMovieAndAudioByText("我什么时候无敌了", 1)
-	genMovieAndAudioByText("测试数据", -1, True)
+	# genMovieAndAudioByText("我什么时候无敌了", 1, True, "data", "output")
+	genMovieAndAudioByText("测试数据", -1, True, "test", "output")
 		
 
 

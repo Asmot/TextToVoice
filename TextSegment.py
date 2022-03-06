@@ -35,11 +35,11 @@ def textToSegmentByLines(text):
 	segments = [] 
 	res = re.split("[\n]", text)
 	for element in res:
+		if len(element) > 0 :
+			seg = Segment();
+			seg.endChar = element[-1]
+			seg.words = element;
 
-		seg = Segment();
-		seg.endChar = element[-1]
-		seg.words = element;
-
-		segments.append(seg)
+			segments.append(seg)
 	return segments
 
