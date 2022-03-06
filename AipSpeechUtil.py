@@ -31,7 +31,7 @@ def getAppleVoicenames():
             voicenames.append(voicename)
     return voicenames
 
-def combineAudio(destPath, fromPath):
+def combineAudio(destPath, fromPath, format_v):
 	from pydub import AudioSegment
 	if not fileExist(destPath):
 		myaudio1 = AudioSegment.from_file(fromPath)
@@ -42,7 +42,7 @@ def combineAudio(destPath, fromPath):
 		myaudio1 = AudioSegment.from_file(fromPath)
 
 		output_audio = myaudio0 + myaudio1
-		output_audio.export(destPath)
+		output_audio.export(destPath, format = format_v, bitrate='192k')
 
 
 def tts_nsss(content, outputPath, format = "wav"):
@@ -61,8 +61,6 @@ def tts_nsss(content, outputPath, format = "wav"):
 	ve.startSpeakingString_toURL_(text,url)
 	# ve.continueSpeakingString_toURL_(text,url)
 
-	# print(getAppleVoicenames())
-
-	combineAudio(outputPath, tempPath)
+	combineAudio(outputPath, tempPath, format)
 
 # tts_nsss("","")
