@@ -15,7 +15,7 @@ def generateVideoByText(file_path, text):
 	# clip = clip.volumex(0.8)
 
 	# Generate a text clip. You can customize the font, color, etc.
-	txt_clip = TextClip("this is 测试 test ",fontsize=70, color='red',font="./font/trends.ttf")
+	txt_clip = TextClip("this is 测试 test ",fontsize=70, color='red',font="./font/迷你简粗宋字体.ttf")
 
 	# Say that you want it to appear 10s at the center of the screen
 	txt_clip = txt_clip.set_pos('center').set_duration(10)
@@ -36,16 +36,18 @@ class TextAudioItem:
 	audioStart = 0
 
 def generateVideoByTextAndAudio(file_path, title, textAudioLines, audio_path):
-	screensize = (720,460)
-	titlePos = ("center",10)
-	textPos = ("center","center")
+	screensize = (640,960)
+	titleFontSize = 56
+	textFontSize = 32
+	titlePos = ("center",(-titleFontSize / 2 + screensize[1] / 3))
+	textPos = ("center",(screensize[1] / 2))
 	# videoFile = VideoFileClip(file_path);
 	audio_clip = AudioFileClip(audio_path)
 	duration = audio_clip.duration;
 	print ("total duration %s"%(str(audio_clip.duration)))
 
 	text_clips = []
-	title_clip = TextClip(title,fontsize=70, color='red',font="./font/trends.ttf")
+	title_clip = TextClip(title,fontsize=titleFontSize, color='orange',font="./font/trends.ttf")
 	title_clip = title_clip.set_pos(titlePos)
 	title_clip = title_clip.set_duration(duration)
 	title_clip = title_clip.set_audio(audio_clip);
@@ -61,7 +63,7 @@ def generateVideoByTextAndAudio(file_path, title, textAudioLines, audio_path):
 		# 记录总时长，作为下一个字幕的起点
 		totalTextDuration = totalTextDuration + curDuration;
 
-		line_clip = TextClip(item.text, fontsize=40, color='yellow',font="./font/trends.ttf")
+		line_clip = TextClip(item.text, fontsize=textFontSize, color='yellow',font="./font/trends.ttf")
 		line_clip = line_clip.set_pos(textPos)
 		line_clip = line_clip.set_start(curStart)
 		line_clip = line_clip.set_duration(curDuration)

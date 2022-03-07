@@ -61,7 +61,7 @@ def getAudioTime(filePath):
 	
 # 返回这段文本的播放时长 单位 s, 返回数组
 # 如果content有标点符号会被拆分为多个，按照中文标点符号拆分
-def tts_nsss(content, outputPath, format = "wav"):
+def tts_nsss(content, outputPath, format = "wav", voice = 'com.apple.speech.synthesis.voice.Mei-Jia'):
 	from  AppKit import NSSpeechSynthesizer
 	import sys
 	import Foundation
@@ -85,7 +85,7 @@ def tts_nsss(content, outputPath, format = "wav"):
 		nssp = NSSpeechSynthesizer
 		ve = nssp.alloc().init()
 		ve.setRate_(200)
-		ve.setVoice_('com.apple.speech.synthesis.voice.Mei-Jia')
+		ve.setVoice_(voice)
 		url = Foundation.NSURL.fileURLWithPath_(tempPath)
 		ve.startSpeakingString_toURL_(textItem, url)
 		# ve.continueSpeakingString_toURL_(text,url)
@@ -102,6 +102,11 @@ def tts_nsss(content, outputPath, format = "wav"):
 	return resultItems
 
 
-
+if __name__ == "__main__":	
+	result = getAppleVoicenames()
+	voices = ['com.apple.speech.synthesis.voice.Mei-Jia','com.apple.speech.synthesis.voice.Ting-Ting']
+	for voice in voices:
+		outputPath = "./output/" + voice + ".wav"
+		tts_nsss("测试abc", outputPath, "wav", voice)
 
 # tts_nsss("","")
