@@ -4,7 +4,7 @@
 from utils import *
 
 from TextSegment import *
-from AipSpeechUtil import *
+from TTSUtil import *
 from VideoUtils import *
 
 AUDIO_FORMAT = "wav"
