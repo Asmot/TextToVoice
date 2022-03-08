@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 from utils import *
+from role import *
 
 APP_ID = '25709228'
 API_KEY = 'oOUMpGrZzj71M6F4MlZavOD2'
@@ -58,14 +59,28 @@ def getAudioTime(filePath):
 	myaudio1 = AudioSegment.from_file(filePath)
 	return len(myaudio1)  / 1000
 
+class Voice:
+	voice = ""
+	rate = 200
+
+def get_ness_voice(role):
+	v = Voice();
+	if role == SegmentRole_VoiceOver:
+		v.voice = 'com.apple.speech.synthesis.voice.Mei-Jia'
+		v.rate = 200;
+	elif role == SegmentRole_Person: 
+		v.voice = 'com.apple.speech.synthesis.voice.Ting-Ting'
+		v.rate = 180
+	return v
 	
 # 返回这段文本的播放时长 单位 s, 返回数组
 # 如果content有标点符号会被拆分为多个，按照中文标点符号拆分
-def tts_nsss(content, outputPath, format = "wav", voice = 'com.apple.speech.synthesis.voice.Mei-Jia'):
+def tts_nsss(content, outputPath, format = "wav", role = SegmentRole_VoiceOver):
 	from  AppKit import NSSpeechSynthesizer
 	import sys
 	import Foundation
 
+	voiceParm = get_ness_voice(role)
 	tempPath = "./temp." + format
 	text = content
 
@@ -84,8 +99,8 @@ def tts_nsss(content, outputPath, format = "wav", voice = 'com.apple.speech.synt
 
 		nssp = NSSpeechSynthesizer
 		ve = nssp.alloc().init()
-		ve.setRate_(200)
-		ve.setVoice_(voice)
+		ve.setRate_(voiceParm.rate)
+		ve.setVoice_(voiceParm.voice)
 		url = Foundation.NSURL.fileURLWithPath_(tempPath)
 		ve.startSpeakingString_toURL_(textItem, url)
 		# ve.continueSpeakingString_toURL_(text,url)

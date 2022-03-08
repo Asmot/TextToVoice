@@ -38,9 +38,9 @@ def tts_to_file(filePath, outputPath, outputTdPath):
 	segments = textToSegmentByLines(fileCon)
 	totalLen = len(segments)
 	for seg in segments:
-		print("line: " + seg.words)
+		print(seg.role + "--" + seg.words)
 		# 如果words有标点符号会被拆分为多个
-		tdItems = tts_nsss(seg.words, outputPath, AUDIO_FORMAT);
+		tdItems = tts_nsss(seg.words, outputPath, AUDIO_FORMAT, seg.role);
 		for tdItem in tdItems:
 			print ("sd: %s, %s text %s"%(tdItem.start, tdItem.duration, tdItem.text))
 
