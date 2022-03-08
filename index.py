@@ -38,11 +38,10 @@ def tts_to_file(filePath, outputPath, outputTdPath):
 	segments = textToSegmentByLines(fileCon)
 	totalLen = len(segments)
 	for seg in segments:
-		print(seg.role + "--" + seg.words)
 		# 如果words有标点符号会被拆分为多个
-		tdItems = tts_nsss(seg.words, outputPath, AUDIO_FORMAT, seg.role);
+		tdItems = tts_role(seg.words, outputPath, AUDIO_FORMAT, seg.role);
 		for tdItem in tdItems:
-			print ("sd: %s, %s text %s"%(tdItem.start, tdItem.duration, tdItem.text))
+			print ("保存字幕: %.2f, %.2f text %s"%(tdItem.start, tdItem.duration, tdItem.text))
 
 			# 保存文本和文本播放时长，用来制作字幕
 			writeFileAppend(outputPathTextDuration, tdItem.text)

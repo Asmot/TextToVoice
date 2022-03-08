@@ -1,41 +1,13 @@
 # -*- coding:utf-8 -*-
 from utils import *
 from role import *
-
-APP_ID = '25709228'
-API_KEY = 'oOUMpGrZzj71M6F4MlZavOD2'
-SECRET_KEY = 'xprrvxGX5VmthpIbZMtRfQAjxUxQ0EBC'
+from TTS_MacApple import *
+from TTS_Baidu import *
 
 class TextDurationItem :
 	start = 0
 	duration = 0
 	text = ""
-
-def textToWav(content, outputPath):
-	import subprocess
-	import shlex
-	from aip import AipSpeech
-
-	aipSpeech = AipSpeech(APP_ID, API_KEY, SECRET_KEY)
-	print ("\ttextToWav %s..."%(content[0:10]))
-	result = aipSpeech.synthesis(content, 'zh', 1, {'vol': 5,'per':5003})
-	if not isinstance(result, dict):
-	    with open(outputPath, 'ab+') as f:
-	        f.write(result)
-
-
-def getAppleVoicenames():
-    from  AppKit import NSSpeechSynthesizer
-
-    """I am returning the names of the voices available on Mac OS X."""
-    voices = NSSpeechSynthesizer.availableVoices()
-    voicenames = []
-    for voice in voices:
-        voiceattr = NSSpeechSynthesizer.attributesForVoice_(voice)
-        voicename = voiceattr['VoiceName']
-        if voicename not in voicenames:
-            voicenames.append(voicename)
-    return voicenames
 
 def combineAudio(destPath, fromPath, format_v):
 	from pydub import AudioSegment
@@ -59,28 +31,22 @@ def getAudioTime(filePath):
 	myaudio1 = AudioSegment.from_file(filePath)
 	return len(myaudio1)  / 1000
 
-class Voice:
-	voice = ""
-	rate = 200
-
-def get_ness_voice(role):
-	v = Voice();
+## 根据角色选择不同的语音
+def tts_switch_by_role(textItem, tempPath, role):
 	if role == SegmentRole_VoiceOver:
-		v.voice = 'com.apple.speech.synthesis.voice.Mei-Jia'
-		v.rate = 200;
+		tts_apple(textItem, tempPath)
 	elif role == SegmentRole_Person: 
-		v.voice = 'com.apple.speech.synthesis.voice.Ting-Ting'
-		v.rate = 180
-	return v
+		tts_baidu(textItem, tempPath)
+	else:
+		tts_apple(textItem, tempPath)
 	
 # 返回这段文本的播放时长 单位 s, 返回数组
 # 如果content有标点符号会被拆分为多个，按照中文标点符号拆分
-def tts_nsss(content, outputPath, format = "wav", role = SegmentRole_VoiceOver):
+def tts_role(content, outputPath, format = "wav", role = SegmentRole_VoiceOver):
 	from  AppKit import NSSpeechSynthesizer
 	import sys
 	import Foundation
 
-	voiceParm = get_ness_voice(role)
 	tempPath = "./temp." + format
 	text = content
 
@@ -97,13 +63,9 @@ def tts_nsss(content, outputPath, format = "wav", role = SegmentRole_VoiceOver):
 		beforeDuration = getAudioTime(outputPath)
 		# print ("before duration " + str(beforeDuration))
 
-		nssp = NSSpeechSynthesizer
-		ve = nssp.alloc().init()
-		ve.setRate_(voiceParm.rate)
-		ve.setVoice_(voiceParm.voice)
-		url = Foundation.NSURL.fileURLWithPath_(tempPath)
-		ve.startSpeakingString_toURL_(textItem, url)
-		# ve.continueSpeakingString_toURL_(text,url)
+		deleteFile(tempPath)
+		tts_switch_by_role(textItem, tempPath, role)
+
 		combineAudio(outputPath, tempPath, format)
 
 		finalDuration = getAudioTime(outputPath)
