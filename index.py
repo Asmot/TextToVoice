@@ -35,6 +35,10 @@ def tts_to_file(filePath, outputPath, outputTdPath):
 	for seg in segments:
 		# 如果words有标点符号会被拆分为多个
 		tdItems = tts_role(seg.words, outputPath, AUDIO_FORMAT, seg.role);
+		if not tdItems:
+			deleteFile(outputPath)
+			deleteFile(outputTdPath)
+			return
 		for tdItem in tdItems:
 			print ("保存字幕: %.2f, %.2f text %s"%(tdItem.start, tdItem.duration, tdItem.text))
 
@@ -78,51 +82,54 @@ def genMovieAndAudioByText(dirName, limitCount = 1, replace = False, inputRootDi
 	print (fileRootPath)
 	print (outputRootPath)
 
+	try:
+		filePathes = getAllFiles(fileRootPath)
 
-	filePathes = getAllFiles(fileRootPath)
+		fileIndex = 0;
+		totalLen = len(filePathes)
+		for filePath in filePathes:
+			fileName = os.path.basename(filePath)
 
-	fileIndex = 0;
-	totalLen = len(filePathes)
-	for filePath in filePathes:
-		fileName = os.path.basename(filePath)
-		
-		fileIndex = fileIndex + 1
-		if limitCount != -1 and fileIndex > limitCount:
-			break
+			# 生成音频存放路径
+			audioFilePath = os.path.join(outputRootPath, fileName)
+			audioFilePath = audioFilePath + "." + AUDIO_FORMAT
 
-		# 生成音频存放路径
-		audioFilePath = os.path.join(outputRootPath, fileName)
-		audioFilePath = audioFilePath + "." + AUDIO_FORMAT
+			# 生成字幕存放路径, 是音频文件添加.td
+			tdFilePath = audioFilePath + "." + TD_FORMAT
 
-		# 生成字幕存放路径, 是音频文件添加.td
-		tdFilePath = audioFilePath + "." + TD_FORMAT
+			# 生成 视频路径
+			movieFilePath = os.path.join(outputRootPath, fileName)
+			movieFilePath = movieFilePath + "." + MOVIE_FORMAT
 
-		# 生成 视频路径
-		movieFilePath = os.path.join(outputRootPath, fileName)
-		movieFilePath = movieFilePath + "." + MOVIE_FORMAT
+			if replace:
+				deleteFile(audioFilePath)
+				deleteFile(tdFilePath)
+				deleteFile(movieFilePath)
 
-		if replace:
-			deleteFile(audioFilePath)
-			deleteFile(tdFilePath)
-			deleteFile(movieFilePath)
+			# 如果存在了不需要处理
+			if fileExist(audioFilePath) : 
+				print ("local exist audio and td file pass")
+			else:
+				tts_to_file(filePath, audioFilePath, tdFilePath)
+			
+			# 如果存在了不需要处理
+			if fileExist(movieFilePath) : 
+				print ("local exist movie file pass")
+				continue
+			else:
+				audioAndTextDuration_to_movie(fileName, audioFilePath, tdFilePath, movieFilePath)
 
-		# 如果存在了不需要处理
-		if fileExist(audioFilePath) : 
-			print ("local exist audio and td file pass")
-		else:
-			tts_to_file(filePath, audioFilePath, tdFilePath)
-		
-		# 如果存在了不需要处理
-		if fileExist(movieFilePath) : 
-			print ("local exist movie file pass")
-		else:
-			audioAndTextDuration_to_movie(fileName, audioFilePath, tdFilePath, movieFilePath)
+			print ("complete %s/%s %s"%(fileIndex, totalLen, fileName))
 
-		print ("complete %s/%s %s"%(fileIndex, totalLen, fileName))
+			fileIndex = fileIndex + 1
+			if limitCount != -1 and fileIndex > limitCount:
+				break
+	except:
+		return False
 
 if __name__ == "__main__":
 	# genMovieAndAudioByText("我什么时候无敌了", 1, True, "data", "output")
-	genMovieAndAudioByText("我什么时候无敌了1062", -1, False, "data", "output")
+	genMovieAndAudioByText("我什么时候无敌了1062", 1, False, "data", "output")
 	# genMovieAndAudioByText("测试数据", -1, True, "test", "output")
 		
 

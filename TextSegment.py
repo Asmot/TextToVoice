@@ -5,11 +5,7 @@ import os
 import sys
 import re
 from utils import *
-
-
-# 角色
-SegmentRole_VoiceOver = "旁白"
-SegmentRole_Person = "人物"
+from role import *
 
 class Segment:
 	endChar = "" #  Object 
@@ -19,6 +15,18 @@ class Segment:
 	def __str__(self):
 		return self.endChar + "" + self.words
 
+def isValid(words):
+	if len(words) == 0:
+		return False
+	if "一秒记住ｈｔｔｐ" in words:
+		return False
+	if "\/\/" in words:
+		return False
+	if "//" in words:
+		return False
+	if "记住网址 " in words:	
+		return False
+	return True
 
 # split by \n
 # end with 。/ ？ / !
@@ -31,7 +39,7 @@ def textToSegmentByLines(text):
 	totalLen = len(wordsList)
 	for i in range(totalLen):
 		words = getWordsFromList(wordsList, i)
-		if len(words) > 0 :
+		if isValid(words):
 			seg = Segment();
 			seg.endChar = words[-1]
 			seg.words = words;

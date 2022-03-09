@@ -34,11 +34,12 @@ def getAudioTime(filePath):
 ## 根据角色选择不同的语音
 def tts_switch_by_role(textItem, tempPath, role):
 	if role == SegmentRole_VoiceOver:
-		tts_apple(textItem, tempPath)
+		flag = tts_apple(textItem, tempPath)
 	elif role == SegmentRole_Person: 
-		tts_apple(textItem, tempPath)
+		flag = tts_apple(textItem, tempPath)
 	else:
-		tts_apple(textItem, tempPath)
+		flag = tts_apple(textItem, tempPath)
+	return flag;
 	
 # 返回这段文本的播放时长 单位 s, 返回数组
 # 如果content有标点符号会被拆分为多个，按照中文标点符号拆分
@@ -64,7 +65,9 @@ def tts_role(content, outputPath, format = "wav", role = SegmentRole_VoiceOver):
 		# print ("before duration " + str(beforeDuration))
 
 		deleteFile(tempPath)
-		tts_switch_by_role(textItem, tempPath, role)
+		flag = tts_switch_by_role(textItem, tempPath, role)
+		if not flag:
+			return False
 
 		combineAudio(outputPath, tempPath, format)
 

@@ -12,20 +12,30 @@ def getAppleVoicenames():
             voicenames.append(voicename)
     return voicenames
 
-def tts_apple(content, outputPath, voice = 'com.apple.speech.synthesis.voice.Mei-Jia', rate = 200):
+def tts_apple(content, outputPath, voice = 'com.apple.speech.synthesis.voice.Mei-Jia', rate = 200, retryTimes = 0):
     from  AppKit import NSSpeechSynthesizer
     import sys  
     import Foundation
 
     print("apple tts %s"%(content))
 
-    nssp = NSSpeechSynthesizer
-    ve = nssp.alloc().init()
-    ve.setRate_(rate)
-    ve.setVoice_(voice)
-    url = Foundation.NSURL.fileURLWithPath_(outputPath)
-    ve.startSpeakingString_toURL_(content, url)
-    del ve
+    try: 
+        nssp = NSSpeechSynthesizer
+        ve = nssp.alloc().init()
+        ve.setRate_(rate)
+        ve.setVoice_(voice)
+        url = Foundation.NSURL.fileURLWithPath_(outputPath)
+        ve.startSpeakingString_toURL_(content, url)
+        del ve
+        return True
+    except:
+        print("apple tts retryTimes %s %s"%(str(retryTimes),content)) 
+        retryTimes = retryTimes + 1;
+        if retryTimes > 3:
+            return False
+
+        return tts_apple(content, outputPath, voice, rate, retryTimes)
+    
 
 
 def get_ness_default_voice():
