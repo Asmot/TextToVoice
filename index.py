@@ -16,21 +16,16 @@ def getAllFiles(dir):
 	total_len = len(fileNames)
 
 	result = []
-	## filter by 第 n 章
-	PRE_STR = "第%s章"
-	for i in range(0, total_len + 1):
-		fileNamePre = PRE_STR%(i)
-		for name in fileNames:
-			if fileNamePre in name:
-				result.append(name)
-				break
+	fileNames.sort()
+	for name in fileNames:
+		result.append(name)
 	return result
 
 ## 生成语音和字幕文件
 ## 字幕文件以td结尾 内容是 文本和时长，换行分割
 def tts_to_file(filePath, outputPath, outputTdPath):
 	outputPathTextDuration = outputTdPath
-	print (filePath + " => " + outputPath)
+	print (filePath + " ================> " + outputPath)
 	fileCon = readFile(filePath)
 	## text to words segments
 
@@ -53,7 +48,7 @@ def tts_to_file(filePath, outputPath, outputTdPath):
 			writeFileAppend(outputPathTextDuration, str(tdItem.duration) + "\n")
 
 		index = index + 1
-		print ("tts complete %s/%s"%(index, totalLen))
+		print ("------ tts complete %s/%s"%(index, totalLen))
 	
 		
 def audioAndTextDuration_to_movie(title, audioFilePath, tdFilePath, outputPath):
@@ -83,13 +78,14 @@ def genMovieAndAudioByText(dirName, limitCount = 1, replace = False, inputRootDi
 	print (fileRootPath)
 	print (outputRootPath)
 
+
 	filePathes = getAllFiles(fileRootPath)
 
 	fileIndex = 0;
 	totalLen = len(filePathes)
 	for filePath in filePathes:
 		fileName = os.path.basename(filePath)
-
+		
 		fileIndex = fileIndex + 1
 		if limitCount != -1 and fileIndex > limitCount:
 			break
@@ -126,7 +122,8 @@ def genMovieAndAudioByText(dirName, limitCount = 1, replace = False, inputRootDi
 
 if __name__ == "__main__":
 	# genMovieAndAudioByText("我什么时候无敌了", 1, True, "data", "output")
-	genMovieAndAudioByText("测试数据", -1, True, "test", "output")
+	genMovieAndAudioByText("我什么时候无敌了1062", -1, False, "data", "output")
+	# genMovieAndAudioByText("测试数据", -1, True, "test", "output")
 		
 
 

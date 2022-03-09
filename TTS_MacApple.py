@@ -25,6 +25,7 @@ def tts_apple(content, outputPath, voice = 'com.apple.speech.synthesis.voice.Mei
     ve.setVoice_(voice)
     url = Foundation.NSURL.fileURLWithPath_(outputPath)
     ve.startSpeakingString_toURL_(content, url)
+    del ve
 
 
 def get_ness_default_voice():

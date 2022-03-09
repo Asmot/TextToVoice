@@ -36,7 +36,7 @@ def tts_switch_by_role(textItem, tempPath, role):
 	if role == SegmentRole_VoiceOver:
 		tts_apple(textItem, tempPath)
 	elif role == SegmentRole_Person: 
-		tts_baidu(textItem, tempPath)
+		tts_apple(textItem, tempPath)
 	else:
 		tts_apple(textItem, tempPath)
 	
