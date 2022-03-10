@@ -44,10 +44,6 @@ def tts_switch_by_role(textItem, tempPath, role):
 # 返回这段文本的播放时长 单位 s, 返回数组
 # 如果content有标点符号会被拆分为多个，按照中文标点符号拆分
 def tts_role(content, outputPath, format = "wav", role = SegmentRole_VoiceOver):
-	from  AppKit import NSSpeechSynthesizer
-	import sys
-	import Foundation
-
 	tempPath = "./temp." + format
 	text = content
 

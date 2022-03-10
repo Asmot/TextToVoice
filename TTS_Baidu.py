@@ -14,10 +14,13 @@ def tts_baidu(content, outputPath, voicePer = BAIDU_VOICE_DEFAULT):
 	import shlex
 	from aip import AipSpeech
 
-	print("baidu tts %s"%(content))
+	LOGI("baidu tts %s"%(content))
 
 	aipSpeech = AipSpeech(APP_ID, API_KEY, SECRET_KEY)
 	result = aipSpeech.synthesis(content, 'zh', 1, {'vol': 5,'per':voicePer })
 	if not isinstance(result, dict):
 	    with open(outputPath, 'ab+') as f:
 	        f.write(result)
+	else:
+		LOGE("tts_baidu error:")
+		LOGE(result)

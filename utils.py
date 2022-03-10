@@ -7,9 +7,19 @@ import sys
 import shutil
 import re
 
+DEBUG_LOG = False
+
+def LOGE(text):
+    print (text)
+
+def LOGI(text):
+    if DEBUG_LOG:
+        print (text)
+
+
 def ensure_dir(file_path):
     if not os.path.exists(file_path):
-        print ( "mkdir => " + file_path)
+        LOGI ( "mkdir => " + file_path)
         os.makedirs(file_path)
 
 def readFile(filePath):

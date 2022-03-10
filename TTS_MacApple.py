@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
+from utils import *
 
 def getAppleVoicenames():
     """I am returning the names of the voices available on Mac OS X."""
@@ -17,7 +18,7 @@ def tts_apple(content, outputPath, voice = 'com.apple.speech.synthesis.voice.Mei
     import sys  
     import Foundation
 
-    print("apple tts %s"%(content))
+    LOGI("apple tts %s"%(content))
 
     try: 
         nssp = NSSpeechSynthesizer
@@ -29,7 +30,7 @@ def tts_apple(content, outputPath, voice = 'com.apple.speech.synthesis.voice.Mei
         del ve
         return True
     except:
-        print("apple tts retryTimes %s %s"%(str(retryTimes),content)) 
+        LOGE("apple tts retryTimes %s %s"%(str(retryTimes),content)) 
         retryTimes = retryTimes + 1;
         if retryTimes > 3:
             return False

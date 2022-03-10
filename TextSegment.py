@@ -19,7 +19,6 @@ def isValid(words):
 	if len(words) == 0:
 		return False
 	if "ｈｔｔｐ" in words:
-		print ("invalid " + words)
 		return False
 	if "\/\/" in words:
 		return False
@@ -30,13 +29,12 @@ def isValid(words):
 	if "\“" == words:	
 		return False
 	if "“" == words:	
-		print ("invalid " + words)
 		return False
 	if words == '[]':
 		return False
 	if words == '()':
 		return False
-	if words == '""':
+	if words == '”':
 		return False
 	return True
 
@@ -61,6 +59,8 @@ def textToSegmentByLines(text):
 			else:
 				seg.role = SegmentRole_VoiceOver
 			segments.append(seg)
+		else:
+			LOGE ("invalid words %s"%(str(words)))
 
 	return segments
 

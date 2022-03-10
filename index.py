@@ -6,6 +6,7 @@ from utils import *
 from TextSegment import *
 from TTSUtil import *
 from VideoUtils import *
+import traceback
 
 AUDIO_FORMAT = "wav"
 TD_FORMAT = "td"
@@ -25,7 +26,7 @@ def getAllFiles(dir):
 ## 字幕文件以td结尾 内容是 文本和时长，换行分割
 def tts_to_file(filePath, outputPath, outputTdPath):
 	outputPathTextDuration = outputTdPath
-	print (filePath + " ================> " + outputPath)
+	LOGE (filePath + " ================> " + outputPath)
 	fileCon = readFile(filePath)
 	## text to words segments
 
@@ -38,9 +39,10 @@ def tts_to_file(filePath, outputPath, outputTdPath):
 		if not tdItems:
 			deleteFile(outputPath)
 			deleteFile(outputTdPath)
+			LOGE("tts_role failed %s"%(seg.words))
 			return
 		for tdItem in tdItems:
-			print ("保存字幕: %.2f, %.2f text %s"%(tdItem.start, tdItem.duration, tdItem.text))
+			LOGI ("保存字幕: %.2f, %.2f text %s"%(tdItem.start, tdItem.duration, tdItem.text))
 
 			# 保存文本和文本播放时长，用来制作字幕
 			writeFileAppend(outputPathTextDuration, tdItem.text)
@@ -52,7 +54,7 @@ def tts_to_file(filePath, outputPath, outputTdPath):
 			writeFileAppend(outputPathTextDuration, str(tdItem.duration) + "\n")
 
 		index = index + 1
-		print ("------ tts complete %s/%s"%(index, totalLen))
+		print ("------ tts complete %s/%s %s"%(index, totalLen,seg.words))
 	
 		
 def audioAndTextDuration_to_movie(title, audioFilePath, tdFilePath, outputPath):
@@ -79,8 +81,8 @@ def genMovieAndAudioByText(dirName, limitCount = 1, replace = False, inputRootDi
 	fileRootPath = changeToAbsPath(os.path.join(inputRootDir, name))
 	outputRootPath = changeToAbsPath(os.path.join(outputRootDir, name))
 	ensure_dir(outputRootPath)
-	print (fileRootPath)
-	print (outputRootPath)
+	LOGE (fileRootPath)
+	LOGE (outputRootPath)
 
 	try:
 		filePathes = getAllFiles(fileRootPath)
@@ -108,23 +110,26 @@ def genMovieAndAudioByText(dirName, limitCount = 1, replace = False, inputRootDi
 
 			# 如果存在了不需要处理
 			if fileExist(audioFilePath) : 
-				print ("local exist audio and td file pass")
+				LOGE ("local exist audio and td file pass")
 			else:
 				tts_to_file(filePath, audioFilePath, tdFilePath)
 			
 			# 如果存在了不需要处理
 			if fileExist(movieFilePath) : 
-				print ("local exist movie file pass")
+				LOGE ("local exist movie file pass")
 				continue
 			else:
 				audioAndTextDuration_to_movie(fileName, audioFilePath, tdFilePath, movieFilePath)
 
-			print ("complete %s/%s %s"%(fileIndex, totalLen, fileName))
+			LOGE ("complete %s/%s %s"%(fileIndex, totalLen, fileName))
 
 			fileIndex = fileIndex + 1
 			if limitCount != -1 and fileIndex > limitCount:
 				break
-	except:
+	except Exception as e:
+		LOGE("genMovieAndAudioByText exception")
+		LOGE(e)
+		traceback.print_exc()
 		return False
 
 if __name__ == "__main__":

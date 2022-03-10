@@ -44,7 +44,7 @@ def generateVideoByTextAndAudio(file_path, title, textAudioLines, audio_path):
 	# videoFile = VideoFileClip(file_path);
 	audio_clip = AudioFileClip(audio_path)
 	duration = audio_clip.duration;
-	print ("total duration %s"%(str(audio_clip.duration)))
+	LOGI ("total duration %s"%(str(audio_clip.duration)))
 
 	text_clips = []
 	title_clip = TextClip(title,fontsize=titleFontSize, color='orange',font="./font/trends.ttf")
@@ -59,7 +59,7 @@ def generateVideoByTextAndAudio(file_path, title, textAudioLines, audio_path):
 	for item in textAudioLines:		
 		curDuration = float(item.audioDuration)
 		curStart = item.audioStart;
-		print ("start %s/%s duration %s text: %s" %(str(curStart), str(duration), str(item.audioDuration), item.text))
+		LOGI ("start %s/%s duration %s text: %s" %(str(curStart), str(duration), str(item.audioDuration), item.text))
 		# 记录总时长，作为下一个字幕的起点
 		totalTextDuration = totalTextDuration + curDuration;
 
