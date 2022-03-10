@@ -54,7 +54,7 @@ def tts_to_file(filePath, outputPath, outputTdPath):
 			writeFileAppend(outputPathTextDuration, str(tdItem.duration) + "\n")
 
 		index = index + 1
-		print ("------ tts complete %s/%s %s"%(index, totalLen,seg.words))
+		print ("------ tts complete %s/%s %s..."%(index, totalLen,seg.words[0:5]))
 	
 		
 def audioAndTextDuration_to_movie(title, audioFilePath, tdFilePath, outputPath):
