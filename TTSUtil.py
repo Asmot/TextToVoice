@@ -36,7 +36,7 @@ def tts_switch_by_role(textItem, tempPath, role):
 	if role == SegmentRole_VoiceOver:
 		flag = tts_apple(textItem, tempPath)
 	elif role == SegmentRole_Person: 
-		flag = tts_apple(textItem, tempPath)
+		flag = tts_apple(textItem, tempPath, "com.apple.speech.synthesis.voice.Ting-Ting")
 	else:
 		flag = tts_apple(textItem, tempPath)
 	return flag;

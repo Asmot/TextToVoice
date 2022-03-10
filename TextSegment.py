@@ -18,13 +18,25 @@ class Segment:
 def isValid(words):
 	if len(words) == 0:
 		return False
-	if "一秒记住ｈｔｔｐ" in words:
+	if "ｈｔｔｐ" in words:
+		print ("invalid " + words)
 		return False
 	if "\/\/" in words:
 		return False
 	if "//" in words:
 		return False
-	if "记住网址 " in words:	
+	if "记住网址" in words:	
+		return False
+	if "\“" == words:	
+		return False
+	if "“" == words:	
+		print ("invalid " + words)
+		return False
+	if words == '[]':
+		return False
+	if words == '()':
+		return False
+	if words == '""':
 		return False
 	return True
 
@@ -75,12 +87,13 @@ def getWordsFromList(wordsList, index):
 
 
 if __name__ == "__main__":
-	filePath = "./data/我什么时候无敌了/第1章 养的鸡竟是凤凰"
+	filePath = "./data/我什么时候无敌了1062/第1087章 应该是个狂妄且有些小聪明的人"
 	str = readFile(filePath)
 
 	segments = textToSegmentByLines(str)
-	for seg in segments:
-		print(seg.role + "--" + seg.words)
+	print(segments[0].role + "--" + segments[0].words)
+	# for seg in segments:
+	# 	print(seg.role + "--" + seg.words)
 
 
 
