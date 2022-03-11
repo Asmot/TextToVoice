@@ -36,7 +36,7 @@ def tts_to_file(filePath, outputPath, outputTdPath):
 	for seg in segments:
 		# 如果words有标点符号会被拆分为多个
 		tdItems = tts_role(seg.words, outputPath, AUDIO_FORMAT, seg.role);
-		if not tdItems:
+		if TTS_FLAG_FAILED == tdItems:
 			deleteFile(outputPath)
 			deleteFile(outputTdPath)
 			LOGE("tts_role failed %s"%(seg.words))
@@ -54,7 +54,10 @@ def tts_to_file(filePath, outputPath, outputTdPath):
 			writeFileAppend(outputPathTextDuration, str(tdItem.duration) + "\n")
 
 		index = index + 1
-		print ("------ tts complete %s/%s %s..."%(index, totalLen,seg.words[0:5]))
+		if len(tdItems) > 0:
+			print ("------ tts complete %s/%s %s..."%(index, totalLen,seg.words[0:5]))
+		else:
+			print ("------ tts pass     %s/%s %s..."%(index, totalLen,seg.words[0:5]))
 	
 		
 def audioAndTextDuration_to_movie(title, audioFilePath, tdFilePath, outputPath):
@@ -84,25 +87,25 @@ def genMovieAndAudioByText(dirName, limitCount = 1, replace = False, inputRootDi
 	LOGE (fileRootPath)
 	LOGE (outputRootPath)
 
-	try:
-		filePathes = getAllFiles(fileRootPath)
+	
+	filePathes = getAllFiles(fileRootPath)
 
-		fileIndex = 0;
-		totalLen = len(filePathes)
-		for filePath in filePathes:
-			fileName = os.path.basename(filePath)
+	fileIndex = 0;
+	totalLen = len(filePathes)
+	for filePath in filePathes:
+		fileName = os.path.basename(filePath)
+		
+		# 生成音频存放路径
+		audioFilePath = os.path.join(outputRootPath, fileName)
+		audioFilePath = audioFilePath + "." + AUDIO_FORMAT
 
-			# 生成音频存放路径
-			audioFilePath = os.path.join(outputRootPath, fileName)
-			audioFilePath = audioFilePath + "." + AUDIO_FORMAT
+		# 生成字幕存放路径, 是音频文件添加.td
+		tdFilePath = audioFilePath + "." + TD_FORMAT
 
-			# 生成字幕存放路径, 是音频文件添加.td
-			tdFilePath = audioFilePath + "." + TD_FORMAT
-
-			# 生成 视频路径
-			movieFilePath = os.path.join(outputRootPath, fileName)
-			movieFilePath = movieFilePath + "." + MOVIE_FORMAT
-
+		# 生成 视频路径
+		movieFilePath = os.path.join(outputRootPath, fileName)
+		movieFilePath = movieFilePath + "." + MOVIE_FORMAT
+		try:
 			if replace:
 				deleteFile(audioFilePath)
 				deleteFile(tdFilePath)
@@ -110,13 +113,13 @@ def genMovieAndAudioByText(dirName, limitCount = 1, replace = False, inputRootDi
 
 			# 如果存在了不需要处理
 			if fileExist(audioFilePath) : 
-				LOGE ("local exist audio and td file pass")
+				LOGE ("local exist audio and td file pass %s"%(audioFilePath[0:5]))
 			else:
 				tts_to_file(filePath, audioFilePath, tdFilePath)
 			
 			# 如果存在了不需要处理
 			if fileExist(movieFilePath) : 
-				LOGE ("local exist movie file pass")
+				LOGE ("local exist movie file pass %s"%(movieFilePath[0:5]))
 				continue
 			else:
 				audioAndTextDuration_to_movie(fileName, audioFilePath, tdFilePath, movieFilePath)
@@ -126,11 +129,17 @@ def genMovieAndAudioByText(dirName, limitCount = 1, replace = False, inputRootDi
 			fileIndex = fileIndex + 1
 			if limitCount != -1 and fileIndex > limitCount:
 				break
-	except Exception as e:
-		LOGE("genMovieAndAudioByText exception")
-		LOGE(e)
-		traceback.print_exc()
-		return False
+		except Exception as e:
+			
+			LOGE("genMovieAndAudioByText exception, delete file")
+
+			deleteFile(audioFilePath)
+			deleteFile(tdFilePath)	
+			deleteFile(movieFilePath)
+
+			LOGE(e)
+			traceback.print_exc()
+			return False
 
 if __name__ == "__main__":
 	# genMovieAndAudioByText("我什么时候无敌了", 1, True, "data", "output")

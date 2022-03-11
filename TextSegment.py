@@ -18,16 +18,6 @@ class Segment:
 def isValid(words):
 	if len(words) == 0:
 		return False
-	if "ｈｔｔｐ" in words:
-		return False
-	if "\/\/" in words:
-		return False
-	if "//" in words:
-		return False
-	if "记住网址" in words:	
-		return False
-	if "\“" == words:	
-		return False
 	if "“" == words:	
 		return False
 	if words == '[]':

@@ -4,6 +4,8 @@ from role import *
 from TTS_MacApple import *
 from TTS_Baidu import *
 
+TTS_FLAG_FAILED = "Failed"
+
 class TextDurationItem :
 	start = 0
 	duration = 0
@@ -41,6 +43,30 @@ def tts_switch_by_role(textItem, tempPath, role):
 		flag = tts_apple(textItem, tempPath)
 	return flag;
 	
+def isValid(words):
+	if len(words) == 0:
+		return False
+	if "ｈｔｔｐ" in words:
+		return False
+	if "\/\/" in words:
+		return False
+	if "//" in words:
+		return False
+	if "网址" in words:	
+		return False
+	if "\“" == words:	
+		return False
+	if "“" == words:	
+		return False
+	if words == '[]':
+		return False
+	if words == '()':
+		return False
+	if words == '”':
+		return False
+	return True
+
+
 # 返回这段文本的播放时长 单位 s, 返回数组
 # 如果content有标点符号会被拆分为多个，按照中文标点符号拆分
 def tts_role(content, outputPath, format = "wav", role = SegmentRole_VoiceOver):
@@ -53,7 +79,9 @@ def tts_role(content, outputPath, format = "wav", role = SegmentRole_VoiceOver):
 	
 	for textItem in textList:
 		# print ("text: %s textLen %s"%(textItem, len(textItem)))
-		if len(textItem) == 0:
+		if not isValid(textItem):
+			if len(textItem) != 0:
+				LOGE("invalid words when tts, words is %s"%(textItem))
 			continue
 
 		# 获取时长
@@ -63,7 +91,7 @@ def tts_role(content, outputPath, format = "wav", role = SegmentRole_VoiceOver):
 		deleteFile(tempPath)
 		flag = tts_switch_by_role(textItem, tempPath, role)
 		if not flag:
-			return False
+			return TTS_FLAG_FAILED
 
 		combineAudio(outputPath, tempPath, format)
 
